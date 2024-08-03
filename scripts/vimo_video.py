@@ -47,9 +47,15 @@ os.makedirs(hps_folder, exist_ok=True)
 # Previous steps
 imgfiles = np.array(sorted(glob(f'{img_folder}/*.jpg')))
 tracks = np.load(f'{seq_folder}/tracks.npy', allow_pickle=True).item()
-slam = dict(np.load(f'{seq_folder}/masked_droid_slam.npz'))
-img_focal = slam['img_focal'].tolist()
-img_center = slam['img_center'].tolist()
+#slam = dict(np.load(f'{seq_folder}/masked_droid_slam.npz'))
+# Read the first image to calculate the center and focal length
+first_img = cv2.imread(imgfiles[0])
+height, width = first_img.shape[:2]
+
+# Calculate the image center
+img_center = [width / 2, height / 2]
+# Calculate the focal length as the diagonal of the image
+img_focal = np.sqrt(width**2 + height**2)
 
 # --- Tracks: sort by length  ---
 tid = np.array([tr for tr in tracks])
@@ -102,7 +108,3 @@ for k, idx in enumerate(tid):
     if track_count >= args.max_track:
         break
     
-
-
-
-
